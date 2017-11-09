@@ -1,4 +1,4 @@
 # OOD Project
-Richard Myers
-Vinhcent Vu
-Darian Thomas
+Richard Myers\n
+Vinhcent Vu\n
+Darian Thomas\n
