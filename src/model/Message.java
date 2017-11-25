@@ -1,10 +1,17 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Message {
 	private String text;
-	private String key;
+	private ArrayList<String> key;
 	private boolean encrypted;
-	public Message(String text, String key){
+	
+	public Message(String text) {
+		this.text = text;
+	}
+	
+	public Message(String text, ArrayList<String> key){
 		this.text = text;
 		this.key = key;
 	}
@@ -13,7 +20,7 @@ public class Message {
 		return text;
 	}
 	
-	public String getKey(){
+	public ArrayList<String> getKey(){
 		return key;
 	}
 	
@@ -25,7 +32,7 @@ public class Message {
 		this.text = text;
 	}
 	
-	public void setKey(String key){
+	public void setKey(ArrayList<String> key){
 		this.key = key;
 	}
 	
