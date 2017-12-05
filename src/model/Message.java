@@ -1,3 +1,5 @@
+package model;
+
 public class Message {
     private String text;
     private String key;
@@ -6,7 +8,7 @@ public class Message {
     public Message(String text, String key, Boolean encrypted){
         this.text = text;
         this.key = key;
-        this.encrypted = false;
+        this.encrypted = encrypted;
     }
 
     public String getText(){

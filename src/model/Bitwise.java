@@ -1,9 +1,11 @@
+package model;
+
 import java.util.*;
 import java.io.UnsupportedEncodingException;
 import java.lang.ArrayIndexOutOfBoundsException;
 import java.lang.NumberFormatException;
 
- class Bitwise implements EncryptionStrategy {
+public class Bitwise implements EncryptionStrategy {
 
      private String str = "";
      private int k;
