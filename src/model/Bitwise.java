@@ -10,12 +10,17 @@ public class Bitwise implements EncryptionStrategy {
      private String str = "";
      private int k;
 
-     public Message encrypt(Message message, String key) throws UnsupportedEncodingException,NumberFormatException {
+     public Message encrypt(Message message){
          message.setEncrypted(true);
-         byte[] infoBin;
-         int result = Integer.parseInt(key);
+         byte[] infoBin = null;
+         int result = Integer.parseInt(message.getKey());
          //Key is now an integer
-         infoBin = message.getText().getBytes("UTF-8");
+         try {
+			infoBin = message.getText().getBytes("UTF-8");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
          /*for (byte b : infoBin) {
              //Makes the contents of the array binary
@@ -23,7 +28,6 @@ public class Bitwise implements EncryptionStrategy {
                      + Integer.toBinaryString(b));
          }
 */
-         System.out.println("This is your new encrypted message");
          
          for (byte b : infoBin) {
              int xor;
@@ -35,8 +39,6 @@ public class Bitwise implements EncryptionStrategy {
              message.setText(str);
 
          }
-
-         System.out.println(str);
 
          try {
          } catch (NumberFormatException e) {
@@ -53,12 +55,11 @@ public class Bitwise implements EncryptionStrategy {
 
 
 
-     public Message decrypt(Message message, String key) throws ArrayIndexOutOfBoundsException{
+     public Message decrypt(Message message) throws ArrayIndexOutOfBoundsException{
          message.setEncrypted(false);
-         int result = Integer.parseInt(key);
+         int result = Integer.parseInt(message.getKey());
          String str = "";
          String[] splited = message.getText().split("\\s+");
-         System.out.println("This is the message decrypted");
 
          for(int i = 0; i < splited.length; i++){
              int nk = Integer.parseInt(splited[i]);
@@ -69,8 +70,7 @@ public class Bitwise implements EncryptionStrategy {
 
          }
 
-         System.out.println(str);
-
+         message.setText(str);
          try {
 
          } catch (ArrayIndexOutOfBoundsException e) {

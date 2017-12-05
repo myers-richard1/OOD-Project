@@ -27,50 +27,66 @@ public class RSA implements EncryptionStrategy {
 		return kpg.generateKeyPair();
 	}
 
-	public Message encrypt(Message m) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+	public Message encrypt(Message message){
+		MultiKeyMessage m = (MultiKeyMessage)message;
 		String plainText = m.getText();
-		Cipher c = Cipher.getInstance(alg);
-		KeyPair keys = generateKeys();
+		byte[] encrypted = null;
+		KeyPair keys = null;
+		try{
+			Cipher c = Cipher.getInstance(alg);
+			keys = generateKeys();
 
-		c.init(Cipher.ENCRYPT_MODE, keys.getPublic());
+			c.init(Cipher.ENCRYPT_MODE, keys.getPublic());
 
-		// do encryption
-		byte[] encrypted = c.doFinal(plainText.getBytes());
-
+			// do encryption
+			encrypted = c.doFinal(plainText.getBytes());
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		
 		// set the encrypted text as the text
 		m.setText(Base64.getEncoder().encodeToString(encrypted));
 		// set flag to encrypted
 		m.setEncrypted(true);
 		// set private key as first item, set public key as second item
-		m.setKey(new ArrayList<String>(Arrays.asList(Base64.getEncoder().encodeToString(keys.getPrivate().getEncoded()), Base64.getEncoder().encodeToString(keys.getPublic().getEncoded()))));
-
+		m.setMultiKey(new ArrayList<String>(Arrays.asList(Base64.getEncoder().encodeToString(keys.getPrivate().getEncoded()), Base64.getEncoder().encodeToString(keys.getPublic().getEncoded()))));
+		String commaKey = null;
+		for (String s : m.getMultiKey()){
+			System.out.print(s+",");
+			commaKey += s+",";
+		}
+		m.setKey(commaKey);
+		
 		return m;
 	}
 
-	public Message decrypt(Message m) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeySpecException {
-		// get text
-		String cipherText = m.getText();
-		Cipher c = Cipher.getInstance(alg);
-		// key was encoded, so decode it
-		byte[] privateBytes = Base64.getDecoder().decode(m.getKey().get(0));
-		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateBytes);
-		KeyFactory kf = KeyFactory.getInstance(alg);
-		PrivateKey privateKey = kf.generatePrivate(keySpec);
-
-		c.init(Cipher.DECRYPT_MODE, privateKey);
-
-		// have to decode the cipher text
-		// then decrypt
-		byte[] decoded = Base64.getDecoder().decode(cipherText);
-		byte[] decrypted = c.doFinal(decoded);
-
-		// set plain text as text
-		m.setText(new String(decrypted));
-		// set flag to not encrypted
-		m.setEncrypted(false);
-		// not necessary, but set key to nothing
-		m.setKey(null);
-
+	public Message decrypt(Message message){
+		MultiKeyMessage m = (MultiKeyMessage)message;
+		try{// get text
+			String cipherText = m.getText();
+			Cipher c = Cipher.getInstance(alg);
+			// key was encoded, so decode it
+			byte[] privateBytes = Base64.getDecoder().decode(m.getMultiKey().get(0));
+			PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateBytes);
+			KeyFactory kf = KeyFactory.getInstance(alg);
+			PrivateKey privateKey = kf.generatePrivate(keySpec);
+	
+			c.init(Cipher.DECRYPT_MODE, privateKey);
+	
+			// have to decode the cipher text
+			// then decrypt
+			byte[] decoded = Base64.getDecoder().decode(cipherText);
+			byte[] decrypted = c.doFinal(decoded);
+	
+			// set plain text as text
+			m.setText(new String(decrypted));
+			// set flag to not encrypted
+			m.setEncrypted(false);
+			// not necessary, but set key to nothing
+			m.setKey(null);
+		} catch(Exception e){
+			e.printStackTrace();
+		}
 		return m;
 	}
 }

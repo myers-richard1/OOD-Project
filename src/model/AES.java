@@ -29,54 +29,61 @@ public class AES  implements EncryptionStrategy {
 	}
 	
 	// encrypt message
-	public Message encrypt(Message message) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	public Message encrypt(Message message){
 		// get text from message
 		String plainText = message.getText();
 		// generate a new key each time you encrypt
-		Key k = generateKey();
-		
-		// set algorithm
-		Cipher c = Cipher.getInstance(alg);
-		// init cipher
-		c.init(Cipher.ENCRYPT_MODE, k);
-		
-		// do encryption
-		byte[] encrypted = c.doFinal(plainText.getBytes());
-		
-		// set the encrypted text as the text
-		message.setText(Base64.getEncoder().encodeToString(encrypted));
-		// set flag to encrypted
-		message.setEncrypted(true);
-		// set the key in message (super safe)
-		message.setKey(new ArrayList<String>(Arrays.asList(Base64.getEncoder().encodeToString(k.getEncoded()))));
-		
+		try{
+			Key k = generateKey();
+			
+			// set algorithm
+			Cipher c = Cipher.getInstance(alg);
+			// init cipher
+			c.init(Cipher.ENCRYPT_MODE, k);
+			
+			// do encryption
+			byte[] encrypted = c.doFinal(plainText.getBytes());
+			
+			// set the encrypted text as the text
+			message.setText(Base64.getEncoder().encodeToString(encrypted));
+			// set flag to encrypted
+			message.setEncrypted(true);
+			// set the key in message (super safe)
+			message.setKey(Base64.getEncoder().encodeToString(k.getEncoded()));
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 		return message;
 	}
 	
 	// decrypt message
-	public Message decrypt(Message message) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	public Message decrypt(Message message){
 		// get text
 		String cipherText = message.getText();
 		// have to use same key that was used to encrypt text
-		Key k = new SecretKeySpec(Base64.getDecoder().decode(message.getKey().get(0)), alg);
+		try{
+			Key k = new SecretKeySpec(Base64.getDecoder().decode(message.getKey()), alg);
 		
-		// set algorithm
-		Cipher c = Cipher.getInstance(alg);
-		// init cipher
-		c.init(Cipher.DECRYPT_MODE, k);
 		
-		// have to decode the cipher text
-		// then decrypt
-		byte[] decoded = Base64.getDecoder().decode(cipherText);
-		byte[] decrypted = c.doFinal(decoded);
-		
-		// set plain text as text
-		message.setText(new String(decrypted));
-		// set flag to not encrypted
-		message.setEncrypted(false);
-		// not necessary, but set key to nothing
-		message.setKey(null);
-		
+			// set algorithm
+			Cipher c = Cipher.getInstance(alg);
+			// init cipher
+			c.init(Cipher.DECRYPT_MODE, k);
+			
+			// have to decode the cipher text
+			// then decrypt
+			byte[] decoded = Base64.getDecoder().decode(cipherText);
+			byte[] decrypted = c.doFinal(decoded);
+			
+			// set plain text as text
+			message.setText(new String(decrypted));
+			// set flag to not encrypted
+			message.setEncrypted(false);
+			// not necessary, but set key to nothing
+			message.setKey(null);
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 		return message;
 	}
 

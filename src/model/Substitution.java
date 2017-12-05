@@ -5,16 +5,17 @@ import java.io.UnsupportedEncodingException;
 public class Substitution implements EncryptionStrategy{
 	private static final String alphabet = "abcdefghijklmnopqrstuvwxyz";
 	@Override
-	public Message encrypt(Message message) throws UnsupportedEncodingException, NumberFormatException {
+	public Message encrypt(Message message){
 		return substitute(message);
 	}
 
 	@Override
-	public Message decrypt(Message message) throws ArrayIndexOutOfBoundsException {
+	public Message decrypt(Message message){
 		return substitute(message);
 	}
 	
 	private Message substitute(Message message){
+		message.setText(message.getText().toLowerCase());
 		String original = "", changed = "";
 		if (!message.isEncrypted()){
 			original = alphabet;

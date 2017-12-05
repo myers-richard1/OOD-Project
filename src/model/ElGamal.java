@@ -53,7 +53,8 @@ public class ElGamal implements EncryptionStrategy {
 	}
 
 	// encrypt the message
-	public Message encrypt(Message m) {
+	public Message encrypt(Message message) {
+		MultiKeyMessage m = (MultiKeyMessage)message;
 		BigInteger plain = new BigInteger(m.getText().getBytes());
 		ArrayList<BigInteger> keys = getKeys(plain.bitLength());
 		
@@ -62,7 +63,7 @@ public class ElGamal implements EncryptionStrategy {
 		BigInteger g = keys.get(1);
 		BigInteger h = keys.get(2);
 		BigInteger x = keys.get(3);
-		
+		m.setKey(p+","+g+","+h+","+x);
 		// get pPrime from p
 		BigInteger pPrime = p.subtract(ONE).divide(TWO);
 		// r cant be bigger than pPrime
@@ -75,14 +76,15 @@ public class ElGamal implements EncryptionStrategy {
 		// use shared secret to get message from c2
 		ArrayList<BigInteger> encMessage = new ArrayList<>(Arrays.asList(g.modPow(r,  p), plain.multiply(h.modPow(r, p))));
 		
-		m.setKey(new ArrayList<String>(Arrays.asList(p.toString(), g.toString(), h.toString(), x.toString())));
+		m.setMultiKey(new ArrayList<String>(Arrays.asList(p.toString(), g.toString(), h.toString(), x.toString())));
 		m.setEncrypted(true);
 		m.setText(encMessage.toString());
 		
 		return m;
 	}
 	
-	public Message decrypt(Message m) {
+	public Message decrypt(Message message) {
+		MultiKeyMessage m = (MultiKeyMessage)message;
 		// so, when we encrypted, its in 2 parts
 		// [c1, c2]
 		String encMessage = m.getText();
@@ -95,8 +97,8 @@ public class ElGamal implements EncryptionStrategy {
 		BigInteger mhr = new BigInteger(sM[1].trim());
 		
 		// get the keys stored in message
-		BigInteger x = new BigInteger(m.getKey().get(3));
-		BigInteger p = new BigInteger(m.getKey().get(0));
+		BigInteger x = new BigInteger(m.getMultiKey().get(3));
+		BigInteger p = new BigInteger(m.getMultiKey().get(0));
 		
 		BigInteger hr = gr.modPow(x, p);
 		BigInteger decMessage = mhr.multiply(hr.modInverse(p)).mod(p);

@@ -34,8 +34,8 @@ public class View {
 	public boolean getDirectionChoice(){
 		System.out.println("Enter 1 for encryption, 2 for decryption");
 		String input = s.nextLine();
-		if (s.equals("1")) return false;
-		else if (s.equals("2")) return true;
+		if (input.equals("1")) return false;
+		else if (input.equals("2")) return true;
 		return false; //TODO check for invalid input (remove this line)
 	}
 	
@@ -51,5 +51,9 @@ public class View {
 	
 	public void displayModifiedMessage(String text){
 		System.out.println("Your modified message is: " + text);
+	}
+	
+	public void displayKey(String key){
+		System.out.println("Your key is: " + key);
 	}
 }

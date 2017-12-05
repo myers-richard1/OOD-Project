@@ -1,21 +1,24 @@
 package model;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Shift implements EncryptionStrategy{
 	private static final String alphabet = "abcdefghijklmnopqrstuvwxyz";
 	@Override
-	public Message encrypt(Message message) throws UnsupportedEncodingException, NumberFormatException {
+	public Message encrypt(Message message){
 		System.out.println("Encrypting the message");
 		return shift(message);
 	}
 
 	@Override
-	public Message decrypt(Message message) throws ArrayIndexOutOfBoundsException {
+	public Message decrypt(Message message){
 		return shift(message);
 	}
 	
 	private Message shift(Message message){
+		message.setText(message.getText().toLowerCase());
 		int shiftAmount = Integer.parseInt(message.getKey());
 		String shiftedMessage = "";
 		for (int i = 0; i < message.getText().length(); i++){

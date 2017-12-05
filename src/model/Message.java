@@ -1,14 +1,22 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Message {
     private String text;
     private String key;
     private boolean encrypted;
 
-    public Message(String text, String key, Boolean encrypted){
+    public Message(String text, String key, boolean encrypted){
         this.text = text;
         this.key = key;
         this.encrypted = encrypted;
+    }
+    
+    public Message(String text, boolean encrypted){
+    	this.text = text;
+    	key = null;
+    	this.encrypted = encrypted;
     }
 
     public String getText(){
