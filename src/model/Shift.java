@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 public class Shift implements EncryptionStrategy{
 	private static final String alphabet = "abcdefghijklmnopqrstuvwxyz";
+	private String error;//this is given a value if there was a problem with the encryption (usually because the user entered an invalid key
+	
 	@Override
 	public Message encrypt(Message message){
 		System.out.println("Encrypting the message");
@@ -18,36 +20,37 @@ public class Shift implements EncryptionStrategy{
 	}
 	
 	private Message shift(Message message){
-		message.setText(message.getText().toLowerCase());
-		int shiftAmount = Integer.parseInt(message.getKey());
+		//initialize variables
 		String shiftedMessage = "";
-		for (int i = 0; i < message.getText().length(); i++){
-			String currentCharacter = String.valueOf(message.getText().charAt(i));	
-			if (alphabet.contains(currentCharacter)){
-				int shifted = 0;
-				if (!message.isEncrypted()) 
-					shifted = alphabet.indexOf(currentCharacter)+shiftAmount;
-				else
-					shifted = alphabet.indexOf(currentCharacter)-shiftAmount;
-				while (shifted >= 26) shifted -= 26;
-				while (shifted < 0) shifted += 26;
-				shiftedMessage += alphabet.charAt(shifted);
-				//throw new NullPointerException();
+		int shiftAmount = 0;
+		try{
+			//make the message lowercase and get the shift amount
+			message.setText(message.getText().toLowerCase());
+			shiftAmount = Integer.parseInt(message.getKey());
+			//loop through the message text string and shift the characters, and add them to the modified string
+			for (int i = 0; i < message.getText().length(); i++){
+				String currentCharacter = String.valueOf(message.getText().charAt(i));	
+				if (alphabet.contains(currentCharacter)){
+					int shifted = 0;
+					if (!message.isEncrypted()) 
+						shifted = alphabet.indexOf(currentCharacter)+shiftAmount;
+					else
+						shifted = alphabet.indexOf(currentCharacter)-shiftAmount;
+					while (shifted >= 26) shifted -= 26;
+					while (shifted < 0) shifted += 26;
+					shiftedMessage += alphabet.charAt(shifted);
+					//throw new NullPointerException();
+				}
+				else shiftedMessage += currentCharacter;
 			}
-			else shiftedMessage += currentCharacter;
+		} catch (Exception e){
+			error = "Invalid key or malformed message.";
 		}
-		return new Message(shiftedMessage, Integer.toString(-shiftAmount), true);
+		return new Message(shiftedMessage, Integer.toString(shiftAmount), true);
 	}
 	
-	public static void main(String[] args){
-		Shift test = new Shift();
-		try {
-			System.out.println(test.encrypt(new Message("this is a test", "1", false)).getText());
-			System.out.println(test.decrypt(new Message("uijt jt b uftu", "1", true)).getText());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	@Override
+	public String getError(){
+		return error;
 	}
-
 }

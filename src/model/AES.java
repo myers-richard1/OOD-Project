@@ -16,6 +16,7 @@ import java.util.Base64;
 
 public class AES  implements EncryptionStrategy {
 	private final String alg = "AES";
+	private String error; //this is given a value if there was a problem with the encryption (usually because the user entered an invalid key
 	
 	// generate a key
 	// all keys are same size
@@ -51,7 +52,7 @@ public class AES  implements EncryptionStrategy {
 			// set the key in message (super safe)
 			message.setKey(Base64.getEncoder().encodeToString(k.getEncoded()));
 		} catch (Exception e){
-			e.printStackTrace();
+			error = "Invalid key or malformed message.";
 		}
 		return message;
 	}
@@ -82,9 +83,13 @@ public class AES  implements EncryptionStrategy {
 			// not necessary, but set key to nothing
 			message.setKey(null);
 		} catch (Exception e){
-			e.printStackTrace();
+			error = "Invalid key or malformed message.";
 		}
 		return message;
+	}
+	
+	public String getError(){
+		return error;
 	}
 
 }

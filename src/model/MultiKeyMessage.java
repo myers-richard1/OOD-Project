@@ -13,7 +13,7 @@ public class MultiKeyMessage extends Message{
 	public MultiKeyMessage(Message m){
 		super(m.getText(), m.getKey(), m.isEncrypted());
 		if (m.getKey()!=null){
-			multiKey = new ArrayList(Arrays.asList(m.getKey().split(",")));
+			multiKey = new ArrayList<String>(Arrays.asList(m.getKey().split(",")));
 		}
 		else multiKey = new ArrayList<String>();
 	}

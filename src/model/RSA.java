@@ -19,6 +19,7 @@ import javax.crypto.NoSuchPaddingException;
 
 public class RSA implements EncryptionStrategy {
 	private final String alg = "RSA";
+	private	String error; //this is given a value if there was a problem with the encryption (usually because the user entered an invalid key
 
 	public KeyPair generateKeys() throws NoSuchAlgorithmException {
 		final int keySize = 1024;
@@ -41,7 +42,7 @@ public class RSA implements EncryptionStrategy {
 			// do encryption
 			encrypted = c.doFinal(plainText.getBytes());
 		} catch (Exception e){
-			e.printStackTrace();
+			error = "Invalid key or malformed message";
 		}
 		
 		// set the encrypted text as the text
@@ -85,8 +86,12 @@ public class RSA implements EncryptionStrategy {
 			// not necessary, but set key to nothing
 			m.setKey(null);
 		} catch(Exception e){
-			e.printStackTrace();
+			error = "Invalid key or malformed message";
 		}
 		return m;
+	}
+	
+	public String getError(){
+		return error;
 	}
 }
